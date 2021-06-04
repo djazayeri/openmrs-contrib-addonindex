@@ -33,6 +33,7 @@ import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.PutMappingRequest;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.BoostingQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -120,10 +121,10 @@ public class ElasticSearchIndex implements Index {
 			boolQB.should(QueryBuilders.prefixQuery("name", query).boost(8.0f));
 
 			//Query is subset of module name(Medium priority)
-			boolQB.should(QueryBuilders.matchQuery("name", query).boost(4.0f));
+			boolQB.should(QueryBuilders.matchQuery("name", query).operator(MatchQueryBuilder.Operator.AND).boost(2.0f));
 
 			//Description matches query either completely or partially(Low priority)
-			boolQB.should(QueryBuilders.matchQuery("description", query).boost(2.0f));
+			boolQB.should(QueryBuilders.matchQuery("description", query).operator(MatchQueryBuilder.Operator.AND).boost(0.5f));
 
 			//Allow for spelling mistake while searching for a particular module
 			boolQB.should(QueryBuilders.fuzzyQuery("name", query));
